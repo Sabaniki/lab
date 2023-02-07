@@ -3,18 +3,18 @@ pkg_info {
 }
 tables {
   preamble {
-    id: 37375156
-    name: "MyIngress.ipv4_lpm"
-    alias: "ipv4_lpm"
+    id: 48850663
+    name: "MyIngress.l2_table"
+    alias: "l2_table"
   }
   match_fields {
     id: 1
-    name: "hdr.ipv4.dstAddr"
-    bitwidth: 32
-    match_type: LPM
+    name: "hdr.ethernet.dstAddr"
+    bitwidth: 48
+    match_type: EXACT
   }
   action_refs {
-    id: 28792405
+    id: 25883707
   }
   action_refs {
     id: 25652968
@@ -41,17 +41,12 @@ actions {
 }
 actions {
   preamble {
-    id: 28792405
-    name: "MyIngress.ipv4_forward"
-    alias: "ipv4_forward"
+    id: 25883707
+    name: "MyIngress.l2_forward"
+    alias: "l2_forward"
   }
   params {
     id: 1
-    name: "dstAddr"
-    bitwidth: 48
-  }
-  params {
-    id: 2
     name: "port"
     bitwidth: 9
   }
