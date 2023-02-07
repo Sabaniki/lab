@@ -1,0 +1,36 @@
+nodes:
+- name: P4
+  image: sabaniki/bmv2
+  docker_run_extra_args: -v `realpath $PWD/../P4`:/behavioral-model/src
+  interfaces:
+  - { name: sv, type: direct, args: Server#p4, addr: 10:00:00:00:00:10 }
+  - { name: cl, type: direct, args: Client#p4, addr: 20:00:00:00:00:20 }
+  sysctls: # Disable packet transfers by Linux kernel
+  - sysctl: net.ipv4.ip_forward=0
+  - sysctl: net.ipv6.conf.all.forwarding=0
+
+- name: Server
+  image: sabaniki/homa
+  interfaces:
+  - { name: p4, type: direct, args: P4#sv, addr: 10:10:10:10:10:10 }
+
+- name: Client
+  image: sabaniki/homa
+  interfaces:
+  - { name: p4, type: direct, args: P4#cl, addr: 20:20:20:20:20:20 }
+
+node_configs:
+# - name: P4
+#   cmds:
+#   - cmd: ip addr add 192.168.10.1/24 dev sv
+#   - cmd: ip addr add 192.168.10.2/24 dev cl
+
+- name: Server
+  cmds:
+  - cmd: ip addr add 192.168.0.10/24 dev p4
+  - cmd: ip neigh replace 192.168.0.20 lladdr 20:20:20:20:20:20 dev p4
+
+- name: Client
+  cmds:
+  - cmd: ip addr add 192.168.0.20/24 dev p4
+  - cmd: ip neigh replace 192.168.0.10 lladdr 10:10:10:10:10:10 dev p4

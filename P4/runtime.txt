@@ -1,0 +1,3 @@
+table_set_default Ingress.l2_table Ingress.drop
+table_add Ingress.l2_table Ingress.l2_forward 10:10:10:10:10:10 => 1
+table_add Ingress.l2_table Ingress.l2_forward 20:20:20:20:20:20 => 2
