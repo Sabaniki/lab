@@ -24,6 +24,47 @@ tables {
   }
   size: 1024
 }
+tables {
+  preamble {
+    id: 40078242
+    name: "MyIngress.dbg_homa"
+    alias: "dbg_homa"
+  }
+  match_fields {
+    id: 1
+    name: "hdr.homa.common.type"
+    bitwidth: 8
+    match_type: EXACT
+  }
+  match_fields {
+    id: 2
+    name: "hdr.homa.common.sender_id"
+    bitwidth: 64
+    match_type: EXACT
+  }
+  match_fields {
+    id: 3
+    name: "hdr.homa.data.client_id"
+    bitwidth: 64
+    match_type: EXACT
+  }
+  match_fields {
+    id: 4
+    name: "hdr.homa.data.client_port"
+    bitwidth: 16
+    match_type: EXACT
+  }
+  match_fields {
+    id: 5
+    name: "hdr.homa.data.server_port"
+    bitwidth: 16
+    match_type: EXACT
+  }
+  action_refs {
+    id: 21257015
+  }
+  size: 1024
+}
 actions {
   preamble {
     id: 21257015

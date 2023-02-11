@@ -2,7 +2,10 @@
 #include <core.p4>
 #include <v1model.p4>
 
-const bit<16> TYPE_IPV4 = 0x800;
+const bit<16> TYPE_IPV4      = 0x800;
+const bit<8>  TYPE_HOMA      = 0xfd;
+const bit<8>  TYPE_HOMA_DATA = 0x10;
+const bit<8>  TYPE_HOMA_ACK  = 0x18;
 
 /*************************************************************************
 *********************** H E A D E R S  ***********************************
@@ -11,6 +14,7 @@ const bit<16> TYPE_IPV4 = 0x800;
 typedef bit<9>  egressSpec_t;
 typedef bit<48> macAddr_t;
 typedef bit<32> ip4Addr_t;
+typedef bit<8>  homa_packet_t;
 
 header ethernet_t {
     macAddr_t dstAddr;
@@ -33,13 +37,59 @@ header ipv4_t {
     ip4Addr_t dstAddr;
 }
 
+header homa_common_t {
+    bit<16>         sport;
+    bit<16>         dport;
+    bit<32>         unused1;
+    bit<32>         unused2;
+    bit<8>          doff;
+    homa_packet_t   type;
+    bit<16>         unused3;
+    bit<16>         checksum;
+    bit<16>         unused4;
+    bit<64>         sender_id;
+}
+
+header homa_data_t {
+    // after common header
+    bit<32>     message_length;
+    bit<32>     incoming;
+    bit<16>     cutoff_version;
+    bit<8>      retransmit;
+    bit<8>      pad;
+    bit<32>     offset;
+    bit<32>     statement_length;
+    bit<64>     client_id;
+    bit<16>     client_port;
+    bit<16>     server_port;
+}
+
+// header homa_data_segment_t {
+//     bit<32>     offset;
+//     bit<32>     statement_length;
+// }
+
+// header homa_ack_t {
+//     bit<64>     client_id;
+//     bit<16>     client_port;
+//     bit<16>     server_port;
+// }
+
+struct homa_t {
+    homa_common_t       common;
+    homa_data_t         data;
+    // homa_data_segment_t data_segment;
+    // homa_ack_t          ack;
+}
+
 struct metadata {
     /* empty */
 }
 
 struct headers {
-    ethernet_t   ethernet;
-    ipv4_t       ipv4;
+    ethernet_t  ethernet;
+    ipv4_t      ipv4;
+    homa_t      homa;
 }
 
 /*************************************************************************
@@ -65,6 +115,23 @@ parser MyParser(packet_in packet,
 
     state parse_ipv4 {
         packet.extract(hdr.ipv4);
+        transition select(hdr.ipv4.protocol) {
+            TYPE_HOMA: parse_homa;
+            default: accept;
+        }
+    }
+
+    state parse_homa {
+        packet.extract(hdr.homa.common);
+        transition select(hdr.homa.common.type) {
+            TYPE_HOMA_DATA: parse_homa_data;
+            // ack やその他については一度忘れる
+            default: accept;
+        }
+    }
+
+    state parse_homa_data {
+        packet.extract(hdr.homa.data);
         transition accept;
     }
 
@@ -107,9 +174,26 @@ control MyIngress(inout headers hdr,
         default_action = drop();
     }
 
+    table dbg_homa {
+        key = {
+            hdr.homa.common.type: exact;
+            hdr.homa.common.sender_id: exact;
+            hdr.homa.data.client_id: exact;
+            hdr.homa.data.client_port: exact;
+            hdr.homa.data.server_port: exact;
+        }
+        actions = {
+            NoAction;
+        }
+        default_action = NoAction();
+    }
+
     apply {
         if (hdr.ipv4.isValid()) {
             l2_table.apply();
+            if (hdr.ipv4.protocol == 0xfd) {
+                dbg_homa.apply();
+            }
         }
     }
 }
@@ -156,6 +240,7 @@ control MyDeparser(packet_out packet, in headers hdr) {
     apply {
         packet.emit(hdr.ethernet);
         packet.emit(hdr.ipv4);
+        packet.emit(hdr.homa);
     }
 }
 

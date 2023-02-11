@@ -54,6 +54,38 @@
         ["srcAddr", 32, false],
         ["dstAddr", 32, false]
       ]
+    },
+    {
+      "name" : "homa_common_t",
+      "id" : 4,
+      "fields" : [
+        ["sport", 16, false],
+        ["dport", 16, false],
+        ["unused1", 32, false],
+        ["unused2", 32, false],
+        ["doff", 8, false],
+        ["type", 8, false],
+        ["unused3", 16, false],
+        ["checksum", 16, false],
+        ["unused4", 16, false],
+        ["sender_id", 64, false]
+      ]
+    },
+    {
+      "name" : "homa_data_t",
+      "id" : 5,
+      "fields" : [
+        ["message_length", 32, false],
+        ["incoming", 32, false],
+        ["cutoff_version", 16, false],
+        ["retransmit", 8, false],
+        ["pad", 8, false],
+        ["offset", 32, false],
+        ["statement_length", 32, false],
+        ["client_id", 64, false],
+        ["client_port", 16, false],
+        ["server_port", 16, false]
+      ]
     }
   ],
   "headers" : [
@@ -72,16 +104,30 @@
       "pi_omit" : true
     },
     {
-      "name" : "ethernet",
+      "name" : "_ethernet0",
       "id" : 2,
       "header_type" : "ethernet_t",
       "metadata" : false,
       "pi_omit" : true
     },
     {
-      "name" : "ipv4",
+      "name" : "_ipv41",
       "id" : 3,
       "header_type" : "ipv4_t",
+      "metadata" : false,
+      "pi_omit" : true
+    },
+    {
+      "name" : "_homa_common2",
+      "id" : 4,
+      "header_type" : "homa_common_t",
+      "metadata" : false,
+      "pi_omit" : true
+    },
+    {
+      "name" : "_homa_data3",
+      "id" : 5,
+      "header_type" : "homa_data_t",
       "metadata" : false,
       "pi_omit" : true
     }
@@ -115,7 +161,7 @@
               "parameters" : [
                 {
                   "type" : "regular",
-                  "value" : "ethernet"
+                  "value" : "_ethernet0"
                 }
               ],
               "op" : "extract"
@@ -138,7 +184,7 @@
           "transition_key" : [
             {
               "type" : "field",
-              "value" : ["ethernet", "etherType"]
+              "value" : ["_ethernet0", "etherType"]
             }
           ]
         },
@@ -150,7 +196,77 @@
               "parameters" : [
                 {
                   "type" : "regular",
-                  "value" : "ipv4"
+                  "value" : "_ipv41"
+                }
+              ],
+              "op" : "extract"
+            }
+          ],
+          "transitions" : [
+            {
+              "type" : "hexstr",
+              "value" : "0xfd",
+              "mask" : null,
+              "next_state" : "parse_homa"
+            },
+            {
+              "type" : "default",
+              "value" : null,
+              "mask" : null,
+              "next_state" : null
+            }
+          ],
+          "transition_key" : [
+            {
+              "type" : "field",
+              "value" : ["_ipv41", "protocol"]
+            }
+          ]
+        },
+        {
+          "name" : "parse_homa",
+          "id" : 2,
+          "parser_ops" : [
+            {
+              "parameters" : [
+                {
+                  "type" : "regular",
+                  "value" : "_homa_common2"
+                }
+              ],
+              "op" : "extract"
+            }
+          ],
+          "transitions" : [
+            {
+              "type" : "hexstr",
+              "value" : "0x10",
+              "mask" : null,
+              "next_state" : "parse_homa_data"
+            },
+            {
+              "type" : "default",
+              "value" : null,
+              "mask" : null,
+              "next_state" : null
+            }
+          ],
+          "transition_key" : [
+            {
+              "type" : "field",
+              "value" : ["_homa_common2", "type"]
+            }
+          ]
+        },
+        {
+          "name" : "parse_homa_data",
+          "id" : 3,
+          "parser_ops" : [
+            {
+              "parameters" : [
+                {
+                  "type" : "regular",
+                  "value" : "_homa_data3"
                 }
               ],
               "op" : "extract"
@@ -176,11 +292,11 @@
       "id" : 0,
       "source_info" : {
         "filename" : "main.p4",
-        "line" : 155,
+        "line" : 239,
         "column" : 8,
         "source_fragment" : "MyDeparser"
       },
-      "order" : ["ethernet", "ipv4"],
+      "order" : ["_ethernet0", "_ipv41", "_homa_common2", "_homa_data3"],
       "primitives" : []
     }
   ],
@@ -197,8 +313,14 @@
       "primitives" : []
     },
     {
-      "name" : "MyIngress.drop",
+      "name" : "NoAction",
       "id" : 1,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "MyIngress.drop",
+      "id" : 2,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -211,7 +333,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 90,
+            "line" : 157,
             "column" : 8,
             "source_fragment" : "mark_to_drop(standard_metadata)"
           }
@@ -220,7 +342,7 @@
     },
     {
       "name" : "MyIngress.l2_forward",
-      "id" : 2,
+      "id" : 3,
       "runtime_data" : [
         {
           "name" : "port",
@@ -242,7 +364,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 94,
+            "line" : 161,
             "column" : 8,
             "source_fragment" : "standard_metadata.egress_spec = port"
           }
@@ -256,7 +378,7 @@
       "id" : 0,
       "source_info" : {
         "filename" : "main.p4",
-        "line" : 86,
+        "line" : 153,
         "column" : 8,
         "source_fragment" : "MyIngress"
       },
@@ -267,7 +389,7 @@
           "id" : 0,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 97,
+            "line" : 164,
             "column" : 10,
             "source_fragment" : "l2_table"
           },
@@ -275,7 +397,7 @@
             {
               "match_type" : "exact",
               "name" : "hdr.ethernet.dstAddr",
-              "target" : ["ethernet", "dstAddr"],
+              "target" : ["_ethernet0", "dstAddr"],
               "mask" : null
             }
           ],
@@ -285,12 +407,72 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [2, 1, 0],
+          "action_ids" : [3, 2, 0],
           "actions" : ["MyIngress.l2_forward", "MyIngress.drop", "NoAction"],
+          "base_default_next" : "node_4",
+          "next_tables" : {
+            "MyIngress.l2_forward" : "node_4",
+            "MyIngress.drop" : "node_4",
+            "NoAction" : "node_4"
+          },
+          "default_entry" : {
+            "action_id" : 2,
+            "action_const" : false,
+            "action_data" : [],
+            "action_entry_const" : false
+          }
+        },
+        {
+          "name" : "MyIngress.dbg_homa",
+          "id" : 1,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 177,
+            "column" : 10,
+            "source_fragment" : "dbg_homa"
+          },
+          "key" : [
+            {
+              "match_type" : "exact",
+              "name" : "hdr.homa.common.type",
+              "target" : ["_homa_common2", "type"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "hdr.homa.common.sender_id",
+              "target" : ["_homa_common2", "sender_id"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "hdr.homa.data.client_id",
+              "target" : ["_homa_data3", "client_id"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "hdr.homa.data.client_port",
+              "target" : ["_homa_data3", "client_port"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "hdr.homa.data.server_port",
+              "target" : ["_homa_data3", "server_port"],
+              "mask" : null
+            }
+          ],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [1],
+          "actions" : ["NoAction"],
           "base_default_next" : null,
           "next_tables" : {
-            "MyIngress.l2_forward" : null,
-            "MyIngress.drop" : null,
             "NoAction" : null
           },
           "default_entry" : {
@@ -308,7 +490,7 @@
           "id" : 0,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 111,
+            "line" : 192,
             "column" : 12,
             "source_fragment" : "hdr.ipv4.isValid()"
           },
@@ -319,12 +501,38 @@
               "left" : null,
               "right" : {
                 "type" : "field",
-                "value" : ["ipv4", "$valid$"]
+                "value" : ["_ipv41", "$valid$"]
               }
             }
           },
           "false_next" : null,
           "true_next" : "MyIngress.l2_table"
+        },
+        {
+          "name" : "node_4",
+          "id" : 1,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 194,
+            "column" : 16,
+            "source_fragment" : "hdr.ipv4.protocol == 0xfd"
+          },
+          "expression" : {
+            "type" : "expression",
+            "value" : {
+              "op" : "==",
+              "left" : {
+                "type" : "field",
+                "value" : ["_ipv41", "protocol"]
+              },
+              "right" : {
+                "type" : "hexstr",
+                "value" : "0xfd"
+              }
+            }
+          },
+          "false_next" : null,
+          "true_next" : "MyIngress.dbg_homa"
         }
       ]
     },
@@ -333,7 +541,7 @@
       "id" : 1,
       "source_info" : {
         "filename" : "main.p4",
-        "line" : 121,
+        "line" : 205,
         "column" : 8,
         "source_fragment" : "MyEgress"
       },

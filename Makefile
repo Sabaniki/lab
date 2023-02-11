@@ -55,7 +55,9 @@ update-image: build tinet-reset ## Update image and reset virtual Env.
 
 .PHONY: run
 run: ## run P4 switch (exec this before `make set-config`)
-	docker exec -it P4 simple_switch src/$(P4_PROG_NAME).json -i 1@sv -i 2@cl --nanolog ipc:///tmp/bm-0-log.ipc --log-console -L debug --notifications-addr ipc:///tmp/bmv2-0-notifications.ipc
+	docker exec -it P4 simple_switch src/$(P4_PROG_NAME).json -i 1@sv -i 2@cl \
+	--nanolog ipc:///tmp/bm-0-log.ipc --log-console -L debug --notifications-addr ipc:///tmp/bmv2-0-notifications.ipc \
+	> ./P4/log/`date +%m-%d-%H:%M:%S`-log.txt
 
 .PHONY: set-config
 set-config: ## set runtime config to P4 switch (exec this after `make run`)
