@@ -72,3 +72,27 @@ cli: ## attach bmv2 runtime cli
 .PHONY: events
 events: ## attach bmv2 nanomsg_events
 	docker exec -it P4 bm_nanomsg_events
+
+.PHONY: p4-ns
+p4-ns: ## attach p4's netns
+	./nsutil/execns P4
+
+.PHONY: server-ns
+server-ns: ## attach server's netns
+	./nsutil/execns Server
+
+.PHONY: client-ns
+client-ns: ## attach client's netns
+	./nsutil/execns Client
+
+.PHONY: p4-ct
+p4-ct: ## attach p4's docker container
+	docker exec -it P4 bash
+
+.PHONY: server-ct
+server-ct: ## attach server's docker container
+	docker exec -it Server bash
+
+.PHONY: client-ct
+client-ct: ## attach client's docker container
+	docker exec -it Client bash

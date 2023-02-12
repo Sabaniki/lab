@@ -178,8 +178,8 @@ control MyIngress(inout headers hdr,
         key = {
             hdr.homa.common.type: exact;
             hdr.homa.common.sender_id: exact;
-            hdr.homa.data.client_id: exact;
-            hdr.homa.data.client_port: exact;
+            hdr.homa.common.sport: exact;
+            hdr.homa.common.dport: exact;
             hdr.homa.data.server_port: exact;
         }
         actions = {
