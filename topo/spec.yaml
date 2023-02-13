@@ -1,7 +1,7 @@
 nodes:
 - name: P4
   image: sabaniki/bmv2
-  docker_run_extra_args: -v `realpath $PWD/../P4`:/behavioral-model/src
+  docker_run_extra_args: -v `realpath $PWD/../P4`:/behavioral-model/src --add-host=node-1:192.168.0.10
   interfaces:
   - { name: sv, type: direct, args: Server#p4, addr: 10:00:00:00:00:10 }
   - { name: cl, type: direct, args: Client#p4, addr: 20:00:00:00:00:20 }
@@ -11,11 +11,13 @@ nodes:
 
 - name: Server
   image: sabaniki/homa
+  docker_run_extra_args: --add-host=node-1:192.168.0.10
   interfaces:
   - { name: p4, type: direct, args: P4#sv, addr: 10:10:10:10:10:10 }
 
 - name: Client
   image: sabaniki/homa
+  docker_run_extra_args: --add-host=node-1:192.168.0.10
   interfaces:
   - { name: p4, type: direct, args: P4#cl, addr: 20:20:20:20:20:20 }
 

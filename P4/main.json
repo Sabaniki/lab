@@ -3,7 +3,27 @@
     {
       "name" : "scalars_0",
       "id" : 0,
-      "fields" : []
+      "fields" : [
+        ["tmp", 32, false],
+        ["tmp_0", 16, false],
+        ["tmp_1", 32, false],
+        ["tmp_2", 16, false],
+        ["tmp_3", 32, false],
+        ["tmp_4", 16, false],
+        ["tmp_5", 32, false],
+        ["tmp_6", 16, false],
+        ["current_flow_0", 148, false],
+        ["hash_num_0", 32, false],
+        ["rtt_0", 48, false],
+        ["f_0", 148, false],
+        ["key_0", 32, false],
+        ["key_1", 16, false],
+        ["key_2", 32, false],
+        ["key_3", 16, false],
+        ["key_4", 4, false],
+        ["key_5", 48, false],
+        ["_padding_0", 4, false]
+      ]
     },
     {
       "name" : "standard_metadata",
@@ -292,7 +312,7 @@
       "id" : 0,
       "source_info" : {
         "filename" : "main.p4",
-        "line" : 239,
+        "line" : 390,
         "column" : 8,
         "source_fragment" : "MyDeparser"
       },
@@ -302,8 +322,68 @@
   ],
   "meter_arrays" : [],
   "counter_arrays" : [],
-  "register_arrays" : [],
-  "calculations" : [],
+  "register_arrays" : [
+    {
+      "name" : "flow_reg",
+      "id" : 0,
+      "source_info" : {
+        "filename" : "main.p4",
+        "line" : 59,
+        "column" : 28,
+        "source_fragment" : "flow_reg"
+      },
+      "size" : 65536,
+      "bitwidth" : 148
+    }
+  ],
+  "calculations" : [
+    {
+      "name" : "calc",
+      "id" : 0,
+      "algo" : "crc16",
+      "input" : [
+        {
+          "type" : "field",
+          "value" : ["scalars", "tmp"]
+        },
+        {
+          "type" : "field",
+          "value" : ["scalars", "tmp_0"]
+        },
+        {
+          "type" : "field",
+          "value" : ["scalars", "tmp_1"]
+        },
+        {
+          "type" : "field",
+          "value" : ["scalars", "tmp_2"]
+        }
+      ]
+    },
+    {
+      "name" : "calc_0",
+      "id" : 1,
+      "algo" : "crc16",
+      "input" : [
+        {
+          "type" : "field",
+          "value" : ["scalars", "tmp_3"]
+        },
+        {
+          "type" : "field",
+          "value" : ["scalars", "tmp_4"]
+        },
+        {
+          "type" : "field",
+          "value" : ["scalars", "tmp_5"]
+        },
+        {
+          "type" : "field",
+          "value" : ["scalars", "tmp_6"]
+        }
+      ]
+    }
+  ],
   "learn_lists" : [],
   "actions" : [
     {
@@ -319,8 +399,20 @@
       "primitives" : []
     },
     {
-      "name" : "MyIngress.drop",
+      "name" : "NoAction",
       "id" : 2,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "NoAction",
+      "id" : 3,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "MyIngress.drop",
+      "id" : 4,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -333,7 +425,7 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 157,
+            "line" : 209,
             "column" : 8,
             "source_fragment" : "mark_to_drop(standard_metadata)"
           }
@@ -342,7 +434,7 @@
     },
     {
       "name" : "MyIngress.l2_forward",
-      "id" : 3,
+      "id" : 5,
       "runtime_data" : [
         {
           "name" : "port",
@@ -364,9 +456,1136 @@
           ],
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 161,
+            "line" : 213,
             "column" : 8,
             "source_fragment" : "standard_metadata.egress_spec = port"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "MyIngress.create_flow_obj",
+      "id" : 6,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "f_0"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "|",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "&",
+                      "left" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : "<<",
+                          "left" : {
+                            "type" : "expression",
+                            "value" : {
+                              "op" : "&",
+                              "left" : {
+                                "type" : "expression",
+                                "value" : {
+                                  "op" : "|",
+                                  "left" : {
+                                    "type" : "expression",
+                                    "value" : {
+                                      "op" : "&",
+                                      "left" : {
+                                        "type" : "expression",
+                                        "value" : {
+                                          "op" : "<<",
+                                          "left" : {
+                                            "type" : "expression",
+                                            "value" : {
+                                              "op" : "&",
+                                              "left" : {
+                                                "type" : "expression",
+                                                "value" : {
+                                                  "op" : "|",
+                                                  "left" : {
+                                                    "type" : "expression",
+                                                    "value" : {
+                                                      "op" : "&",
+                                                      "left" : {
+                                                        "type" : "expression",
+                                                        "value" : {
+                                                          "op" : "<<",
+                                                          "left" : {
+                                                            "type" : "expression",
+                                                            "value" : {
+                                                              "op" : "&",
+                                                              "left" : {
+                                                                "type" : "expression",
+                                                                "value" : {
+                                                                  "op" : "|",
+                                                                  "left" : {
+                                                                    "type" : "expression",
+                                                                    "value" : {
+                                                                      "op" : "&",
+                                                                      "left" : {
+                                                                        "type" : "expression",
+                                                                        "value" : {
+                                                                          "op" : "<<",
+                                                                          "left" : {
+                                                                            "type" : "expression",
+                                                                            "value" : {
+                                                                              "op" : "&",
+                                                                              "left" : {
+                                                                                "type" : "expression",
+                                                                                "value" : {
+                                                                                  "op" : "|",
+                                                                                  "left" : {
+                                                                                    "type" : "expression",
+                                                                                    "value" : {
+                                                                                      "op" : "&",
+                                                                                      "left" : {
+                                                                                        "type" : "expression",
+                                                                                        "value" : {
+                                                                                          "op" : "<<",
+                                                                                          "left" : {
+                                                                                            "type" : "expression",
+                                                                                            "value" : {
+                                                                                              "op" : "&",
+                                                                                              "left" : {
+                                                                                                "type" : "field",
+                                                                                                "value" : ["_ipv41", "srcAddr"]
+                                                                                              },
+                                                                                              "right" : {
+                                                                                                "type" : "hexstr",
+                                                                                                "value" : "0xffffffffffff"
+                                                                                              }
+                                                                                            }
+                                                                                          },
+                                                                                          "right" : {
+                                                                                            "type" : "hexstr",
+                                                                                            "value" : "0x10"
+                                                                                          }
+                                                                                        }
+                                                                                      },
+                                                                                      "right" : {
+                                                                                        "type" : "hexstr",
+                                                                                        "value" : "0xffffffffffff"
+                                                                                      }
+                                                                                    }
+                                                                                  },
+                                                                                  "right" : {
+                                                                                    "type" : "expression",
+                                                                                    "value" : {
+                                                                                      "op" : "&",
+                                                                                      "left" : {
+                                                                                        "type" : "expression",
+                                                                                        "value" : {
+                                                                                          "op" : "&",
+                                                                                          "left" : {
+                                                                                            "type" : "field",
+                                                                                            "value" : ["_homa_common2", "sport"]
+                                                                                          },
+                                                                                          "right" : {
+                                                                                            "type" : "hexstr",
+                                                                                            "value" : "0xffffffffffff"
+                                                                                          }
+                                                                                        }
+                                                                                      },
+                                                                                      "right" : {
+                                                                                        "type" : "hexstr",
+                                                                                        "value" : "0x00000001ffff"
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              },
+                                                                              "right" : {
+                                                                                "type" : "hexstr",
+                                                                                "value" : "0xffffffffffffffffffff"
+                                                                              }
+                                                                            }
+                                                                          },
+                                                                          "right" : {
+                                                                            "type" : "hexstr",
+                                                                            "value" : "0x20"
+                                                                          }
+                                                                        }
+                                                                      },
+                                                                      "right" : {
+                                                                        "type" : "hexstr",
+                                                                        "value" : "0xffffffffffffffffffff"
+                                                                      }
+                                                                    }
+                                                                  },
+                                                                  "right" : {
+                                                                    "type" : "expression",
+                                                                    "value" : {
+                                                                      "op" : "&",
+                                                                      "left" : {
+                                                                        "type" : "expression",
+                                                                        "value" : {
+                                                                          "op" : "&",
+                                                                          "left" : {
+                                                                            "type" : "field",
+                                                                            "value" : ["_ipv41", "dstAddr"]
+                                                                          },
+                                                                          "right" : {
+                                                                            "type" : "hexstr",
+                                                                            "value" : "0xffffffffffffffffffff"
+                                                                          }
+                                                                        }
+                                                                      },
+                                                                      "right" : {
+                                                                        "type" : "hexstr",
+                                                                        "value" : "0x000000000001ffffffff"
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              },
+                                                              "right" : {
+                                                                "type" : "hexstr",
+                                                                "value" : "0xffffffffffffffffffffffff"
+                                                              }
+                                                            }
+                                                          },
+                                                          "right" : {
+                                                            "type" : "hexstr",
+                                                            "value" : "0x10"
+                                                          }
+                                                        }
+                                                      },
+                                                      "right" : {
+                                                        "type" : "hexstr",
+                                                        "value" : "0xffffffffffffffffffffffff"
+                                                      }
+                                                    }
+                                                  },
+                                                  "right" : {
+                                                    "type" : "expression",
+                                                    "value" : {
+                                                      "op" : "&",
+                                                      "left" : {
+                                                        "type" : "expression",
+                                                        "value" : {
+                                                          "op" : "&",
+                                                          "left" : {
+                                                            "type" : "field",
+                                                            "value" : ["_homa_common2", "dport"]
+                                                          },
+                                                          "right" : {
+                                                            "type" : "hexstr",
+                                                            "value" : "0xffffffffffffffffffffffff"
+                                                          }
+                                                        }
+                                                      },
+                                                      "right" : {
+                                                        "type" : "hexstr",
+                                                        "value" : "0x00000000000000000001ffff"
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              "right" : {
+                                                "type" : "hexstr",
+                                                "value" : "0x0fffffffffffffffffffffffff"
+                                              }
+                                            }
+                                          },
+                                          "right" : {
+                                            "type" : "hexstr",
+                                            "value" : "0x4"
+                                          }
+                                        }
+                                      },
+                                      "right" : {
+                                        "type" : "hexstr",
+                                        "value" : "0x0fffffffffffffffffffffffff"
+                                      }
+                                    }
+                                  },
+                                  "right" : {
+                                    "type" : "hexstr",
+                                    "value" : "0x0000000000000000000000000a"
+                                  }
+                                }
+                              },
+                              "right" : {
+                                "type" : "hexstr",
+                                "value" : "0x0fffffffffffffffffffffffffffffffffffff"
+                              }
+                            }
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0x30"
+                          }
+                        }
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x0fffffffffffffffffffffffffffffffffffff"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "&",
+                      "left" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : "&",
+                          "left" : {
+                            "type" : "field",
+                            "value" : ["standard_metadata", "ingress_global_timestamp"]
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0x0fffffffffffffffffffffffffffffffffffff"
+                          }
+                        }
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x00000000000000000000000001ffffffffffff"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 217,
+            "column" : 17,
+            "source_fragment" : "flow, ..."
+          }
+        }
+      ]
+    },
+    {
+      "name" : "main325",
+      "id" : 7,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "rtt_0"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "-",
+                      "left" : {
+                        "type" : "field",
+                        "value" : ["standard_metadata", "ingress_global_timestamp"]
+                      },
+                      "right" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : "&",
+                          "left" : {
+                            "type" : "field",
+                            "value" : ["scalars", "current_flow_0"]
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0xffffffffffff"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xffffffffffff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 325,
+            "column" : 24,
+            "source_fragment" : "rtt = standard_metadata.ingress_global_timestamp - req_time"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "current_flow_0"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "|",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "&",
+                      "left" : {
+                        "type" : "field",
+                        "value" : ["scalars", "current_flow_0"]
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x0fffffffffffffffffffffffff000000000000"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "&",
+                      "left" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : "&",
+                          "left" : {
+                            "type" : "expression",
+                            "value" : {
+                              "op" : "&",
+                              "left" : {
+                                "type" : "expression",
+                                "value" : {
+                                  "op" : "-",
+                                  "left" : {
+                                    "type" : "field",
+                                    "value" : ["standard_metadata", "ingress_global_timestamp"]
+                                  },
+                                  "right" : {
+                                    "type" : "expression",
+                                    "value" : {
+                                      "op" : "&",
+                                      "left" : {
+                                        "type" : "field",
+                                        "value" : ["scalars", "current_flow_0"]
+                                      },
+                                      "right" : {
+                                        "type" : "hexstr",
+                                        "value" : "0xffffffffffff"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "right" : {
+                                "type" : "hexstr",
+                                "value" : "0xffffffffffff"
+                              }
+                            }
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0x0fffffffffffffffffffffffffffffffffffff"
+                          }
+                        }
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x00000000000000000000000000ffffffffffff"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 326,
+            "column" : 24,
+            "source_fragment" : "current_flow[47:0] = rtt"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "main329",
+      "id" : 8,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "current_flow_0"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "|",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "&",
+                      "left" : {
+                        "type" : "field",
+                        "value" : ["scalars", "current_flow_0"]
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x0ffffffffffffffffffffffff0ffffffffffff"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0x0000000000000000000000000f000000000000"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 21,
+            "column" : 28,
+            "source_fragment" : "0xf; ..."
+          }
+        },
+        {
+          "op" : "register_write",
+          "parameters" : [
+            {
+              "type" : "register_array",
+              "value" : "flow_reg"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "hash_num_0"]
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "current_flow_0"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 330,
+            "column" : 24,
+            "source_fragment" : "flow_reg.write(hash_num, current_flow)"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "main332",
+      "id" : 9,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp"]
+            },
+            {
+              "type" : "field",
+              "value" : ["_ipv41", "srcAddr"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 336,
+            "column" : 29,
+            "source_fragment" : "hdr.ipv4.srcAddr"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_0"]
+            },
+            {
+              "type" : "field",
+              "value" : ["_homa_common2", "sport"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 336,
+            "column" : 47,
+            "source_fragment" : "hdr.homa.common.sport"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_1"]
+            },
+            {
+              "type" : "field",
+              "value" : ["_ipv41", "dstAddr"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 336,
+            "column" : 70,
+            "source_fragment" : "hdr.ipv4.dstAddr"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_2"]
+            },
+            {
+              "type" : "field",
+              "value" : ["_homa_common2", "dport"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 336,
+            "column" : 88,
+            "source_fragment" : "hdr.homa.common.dport"
+          }
+        },
+        {
+          "op" : "modify_field_with_hash_based_offset",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "hash_num_0"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x0000"
+            },
+            {
+              "type" : "calculation",
+              "value" : "calc"
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x00010000"
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 332,
+            "column" : 24,
+            "source_fragment" : "hash( ..."
+          }
+        }
+      ]
+    },
+    {
+      "name" : "main350",
+      "id" : 10,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "register_write",
+          "parameters" : [
+            {
+              "type" : "register_array",
+              "value" : "flow_reg"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "hash_num_0"]
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "f_0"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 350,
+            "column" : 24,
+            "source_fragment" : "flow_reg.write(hash_num, f)"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "main289",
+      "id" : 11,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_3"]
+            },
+            {
+              "type" : "field",
+              "value" : ["_ipv41", "dstAddr"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 293,
+            "column" : 25,
+            "source_fragment" : "hdr.ipv4.dstAddr"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_4"]
+            },
+            {
+              "type" : "field",
+              "value" : ["_homa_common2", "dport"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 293,
+            "column" : 43,
+            "source_fragment" : "hdr.homa.common.dport"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_5"]
+            },
+            {
+              "type" : "field",
+              "value" : ["_ipv41", "srcAddr"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 293,
+            "column" : 66,
+            "source_fragment" : "hdr.ipv4.srcAddr"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_6"]
+            },
+            {
+              "type" : "field",
+              "value" : ["_homa_common2", "sport"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 293,
+            "column" : 84,
+            "source_fragment" : "hdr.homa.common.sport"
+          }
+        },
+        {
+          "op" : "modify_field_with_hash_based_offset",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "hash_num_0"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x0000"
+            },
+            {
+              "type" : "calculation",
+              "value" : "calc_0"
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x00010000"
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 289,
+            "column" : 20,
+            "source_fragment" : "hash( ..."
+          }
+        },
+        {
+          "op" : "register_read",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "current_flow_0"]
+            },
+            {
+              "type" : "register_array",
+              "value" : "flow_reg"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "hash_num_0"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 296,
+            "column" : 20,
+            "source_fragment" : "flow_reg.read(current_flow, hash_num)"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "main353",
+      "id" : 12,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "register_read",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "current_flow_0"]
+            },
+            {
+              "type" : "register_array",
+              "value" : "flow_reg"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "hash_num_0"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 353,
+            "column" : 20,
+            "source_fragment" : "flow_reg.read(current_flow, hash_num)"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "key_0"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "&",
+                      "left" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : ">>",
+                          "left" : {
+                            "type" : "field",
+                            "value" : ["scalars", "current_flow_0"]
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0x74"
+                          }
+                        }
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x0fffffffffffffffffffffffffffffffffffff"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xffffffff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 354,
+            "column" : 34,
+            "source_fragment" : "current_flow[END_srcAddr:START_srcAddr]"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "key_1"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "&",
+                      "left" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : ">>",
+                          "left" : {
+                            "type" : "field",
+                            "value" : ["scalars", "current_flow_0"]
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0x64"
+                          }
+                        }
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x0fffffffffffffffffffffffffffffffffffff"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xffff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 355,
+            "column" : 32,
+            "source_fragment" : "current_flow[END_sport:START_sport]"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "key_2"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "&",
+                      "left" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : ">>",
+                          "left" : {
+                            "type" : "field",
+                            "value" : ["scalars", "current_flow_0"]
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0x44"
+                          }
+                        }
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x0fffffffffffffffffffffffffffffffffffff"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xffffffff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 356,
+            "column" : 34,
+            "source_fragment" : "current_flow[END_dstAddr:START_dstAddr]"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "key_3"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "&",
+                      "left" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : ">>",
+                          "left" : {
+                            "type" : "field",
+                            "value" : ["scalars", "current_flow_0"]
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0x34"
+                          }
+                        }
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x0fffffffffffffffffffffffffffffffffffff"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xffff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 357,
+            "column" : 32,
+            "source_fragment" : "current_flow[END_dport:START_dport]"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "key_4"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "&",
+                      "left" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : ">>",
+                          "left" : {
+                            "type" : "field",
+                            "value" : ["scalars", "current_flow_0"]
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0x30"
+                          }
+                        }
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x0fffffffffffffffffffffffffffffffffffff"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0x0f"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 358,
+            "column" : 33,
+            "source_fragment" : "current_flow[END_status:START_status]"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "key_5"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "field",
+                    "value" : ["scalars", "current_flow_0"]
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xffffffffffff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 359,
+            "column" : 36,
+            "source_fragment" : "current_flow[END_timestamp:START_timestamp]"
           }
         }
       ]
@@ -378,7 +1597,7 @@
       "id" : 0,
       "source_info" : {
         "filename" : "main.p4",
-        "line" : 153,
+        "line" : 195,
         "column" : 8,
         "source_fragment" : "MyIngress"
       },
@@ -389,7 +1608,7 @@
           "id" : 0,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 164,
+            "line" : 229,
             "column" : 10,
             "source_fragment" : "l2_table"
           },
@@ -407,7 +1626,7 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [3, 2, 0],
+          "action_ids" : [5, 4, 0],
           "actions" : ["MyIngress.l2_forward", "MyIngress.drop", "NoAction"],
           "base_default_next" : "node_4",
           "next_tables" : {
@@ -416,7 +1635,7 @@
             "NoAction" : "node_4"
           },
           "default_entry" : {
-            "action_id" : 2,
+            "action_id" : 4,
             "action_const" : false,
             "action_data" : [],
             "action_entry_const" : false
@@ -427,7 +1646,7 @@
           "id" : 1,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 177,
+            "line" : 242,
             "column" : 10,
             "source_fragment" : "dbg_homa"
           },
@@ -446,14 +1665,14 @@
             },
             {
               "match_type" : "exact",
-              "name" : "hdr.homa.data.client_id",
-              "target" : ["_homa_data3", "client_id"],
+              "name" : "hdr.homa.common.sport",
+              "target" : ["_homa_common2", "sport"],
               "mask" : null
             },
             {
               "match_type" : "exact",
-              "name" : "hdr.homa.data.client_port",
-              "target" : ["_homa_data3", "client_port"],
+              "name" : "hdr.homa.common.dport",
+              "target" : ["_homa_common2", "dport"],
               "mask" : null
             },
             {
@@ -471,12 +1690,317 @@
           "direct_meters" : null,
           "action_ids" : [1],
           "actions" : ["NoAction"],
+          "base_default_next" : "node_6",
+          "next_tables" : {
+            "NoAction" : "node_6"
+          },
+          "default_entry" : {
+            "action_id" : 1,
+            "action_const" : false,
+            "action_data" : [],
+            "action_entry_const" : false
+          }
+        },
+        {
+          "name" : "tbl_main289",
+          "id" : 2,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 289,
+            "column" : 20,
+            "source_fragment" : "hash( ..."
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [11],
+          "actions" : ["main289"],
+          "base_default_next" : "node_8",
+          "next_tables" : {
+            "main289" : "node_8"
+          },
+          "default_entry" : {
+            "action_id" : 11,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "tbl_main325",
+          "id" : 3,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 325,
+            "column" : 28,
+            "source_fragment" : "= standard_metadata.ingress_global_timestamp - req_time; ..."
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [7],
+          "actions" : ["main325"],
+          "base_default_next" : "MyIngress.dbg_rtt",
+          "next_tables" : {
+            "main325" : "MyIngress.dbg_rtt"
+          },
+          "default_entry" : {
+            "action_id" : 7,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "MyIngress.dbg_rtt",
+          "id" : 4,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 271,
+            "column" : 10,
+            "source_fragment" : "dbg_rtt"
+          },
+          "key" : [
+            {
+              "match_type" : "exact",
+              "name" : "tmp_rtt",
+              "target" : ["scalars", "rtt_0"],
+              "mask" : null
+            }
+          ],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [3],
+          "actions" : ["NoAction"],
+          "base_default_next" : "tbl_main329",
+          "next_tables" : {
+            "NoAction" : "tbl_main329"
+          },
+          "default_entry" : {
+            "action_id" : 3,
+            "action_const" : false,
+            "action_data" : [],
+            "action_entry_const" : false
+          }
+        },
+        {
+          "name" : "tbl_main329",
+          "id" : 5,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 329,
+            "column" : 44,
+            "source_fragment" : "= DONE_MES; ..."
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [8],
+          "actions" : ["main329"],
+          "base_default_next" : "tbl_main353",
+          "next_tables" : {
+            "main329" : "tbl_main353"
+          },
+          "default_entry" : {
+            "action_id" : 8,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "tbl_main332",
+          "id" : 6,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 332,
+            "column" : 24,
+            "source_fragment" : "hash( ..."
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [9],
+          "actions" : ["main332"],
+          "base_default_next" : "tbl_create_flow_obj",
+          "next_tables" : {
+            "main332" : "tbl_create_flow_obj"
+          },
+          "default_entry" : {
+            "action_id" : 9,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "tbl_create_flow_obj",
+          "id" : 7,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 341,
+            "column" : 24,
+            "source_fragment" : "create_flow_obj( ..."
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [6],
+          "actions" : ["MyIngress.create_flow_obj"],
+          "base_default_next" : "tbl_main350",
+          "next_tables" : {
+            "MyIngress.create_flow_obj" : "tbl_main350"
+          },
+          "default_entry" : {
+            "action_id" : 6,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "tbl_main350",
+          "id" : 8,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 350,
+            "column" : 24,
+            "source_fragment" : "flow_reg.write(hash_num, f)"
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [10],
+          "actions" : ["main350"],
+          "base_default_next" : "tbl_main353",
+          "next_tables" : {
+            "main350" : "tbl_main353"
+          },
+          "default_entry" : {
+            "action_id" : 10,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "tbl_main353",
+          "id" : 9,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 353,
+            "column" : 20,
+            "source_fragment" : "flow_reg.read(current_flow, hash_num); ..."
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [12],
+          "actions" : ["main353"],
+          "base_default_next" : "MyIngress.dbg_current_flow",
+          "next_tables" : {
+            "main353" : "MyIngress.dbg_current_flow"
+          },
+          "default_entry" : {
+            "action_id" : 12,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "MyIngress.dbg_current_flow",
+          "id" : 10,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 256,
+            "column" : 10,
+            "source_fragment" : "dbg_current_flow"
+          },
+          "key" : [
+            {
+              "match_type" : "exact",
+              "name" : "dbg_srcAddr",
+              "target" : ["scalars", "key_0"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "dbg_sport",
+              "target" : ["scalars", "key_1"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "dbg_dstAddr",
+              "target" : ["scalars", "key_2"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "dbg_dport",
+              "target" : ["scalars", "key_3"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "dbg_status",
+              "target" : ["scalars", "key_4"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "dbg_timestamp",
+              "target" : ["scalars", "key_5"],
+              "mask" : null
+            }
+          ],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [2],
+          "actions" : ["NoAction"],
           "base_default_next" : null,
           "next_tables" : {
             "NoAction" : null
           },
           "default_entry" : {
-            "action_id" : 1,
+            "action_id" : 2,
             "action_const" : false,
             "action_data" : [],
             "action_entry_const" : false
@@ -490,7 +2014,7 @@
           "id" : 0,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 192,
+            "line" : 282,
             "column" : 12,
             "source_fragment" : "hdr.ipv4.isValid()"
           },
@@ -513,9 +2037,9 @@
           "id" : 1,
           "source_info" : {
             "filename" : "main.p4",
-            "line" : 194,
+            "line" : 284,
             "column" : 16,
-            "source_fragment" : "hdr.ipv4.protocol == 0xfd"
+            "source_fragment" : "hdr.ipv4.protocol == TYPE_HOMA"
           },
           "expression" : {
             "type" : "expression",
@@ -533,6 +2057,288 @@
           },
           "false_next" : null,
           "true_next" : "MyIngress.dbg_homa"
+        },
+        {
+          "name" : "node_6",
+          "id" : 2,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 286,
+            "column" : 20,
+            "source_fragment" : "hdr.homa.common.type == TYPE_HOMA_DATA"
+          },
+          "expression" : {
+            "type" : "expression",
+            "value" : {
+              "op" : "==",
+              "left" : {
+                "type" : "field",
+                "value" : ["_homa_common2", "type"]
+              },
+              "right" : {
+                "type" : "hexstr",
+                "value" : "0x10"
+              }
+            }
+          },
+          "false_next" : null,
+          "true_next" : "tbl_main289"
+        },
+        {
+          "name" : "node_8",
+          "id" : 3,
+          "source_info" : {
+            "filename" : "main.p4",
+            "line" : 306,
+            "column" : 24,
+            "source_fragment" : "hdr.ipv4.srcAddr == current_flow[END_dstAddr:START_dstAddr] && ..."
+          },
+          "expression" : {
+            "type" : "expression",
+            "value" : {
+              "op" : "and",
+              "left" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "and",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "and",
+                      "left" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : "and",
+                          "left" : {
+                            "type" : "expression",
+                            "value" : {
+                              "op" : "==",
+                              "left" : {
+                                "type" : "field",
+                                "value" : ["_ipv41", "srcAddr"]
+                              },
+                              "right" : {
+                                "type" : "expression",
+                                "value" : {
+                                  "op" : "&",
+                                  "left" : {
+                                    "type" : "expression",
+                                    "value" : {
+                                      "op" : "&",
+                                      "left" : {
+                                        "type" : "expression",
+                                        "value" : {
+                                          "op" : ">>",
+                                          "left" : {
+                                            "type" : "field",
+                                            "value" : ["scalars", "current_flow_0"]
+                                          },
+                                          "right" : {
+                                            "type" : "hexstr",
+                                            "value" : "0x44"
+                                          }
+                                        }
+                                      },
+                                      "right" : {
+                                        "type" : "hexstr",
+                                        "value" : "0x0fffffffffffffffffffffffffffffffffffff"
+                                      }
+                                    }
+                                  },
+                                  "right" : {
+                                    "type" : "hexstr",
+                                    "value" : "0xffffffff"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "right" : {
+                            "type" : "expression",
+                            "value" : {
+                              "op" : "==",
+                              "left" : {
+                                "type" : "field",
+                                "value" : ["_homa_common2", "sport"]
+                              },
+                              "right" : {
+                                "type" : "expression",
+                                "value" : {
+                                  "op" : "&",
+                                  "left" : {
+                                    "type" : "expression",
+                                    "value" : {
+                                      "op" : "&",
+                                      "left" : {
+                                        "type" : "expression",
+                                        "value" : {
+                                          "op" : ">>",
+                                          "left" : {
+                                            "type" : "field",
+                                            "value" : ["scalars", "current_flow_0"]
+                                          },
+                                          "right" : {
+                                            "type" : "hexstr",
+                                            "value" : "0x34"
+                                          }
+                                        }
+                                      },
+                                      "right" : {
+                                        "type" : "hexstr",
+                                        "value" : "0x0fffffffffffffffffffffffffffffffffffff"
+                                      }
+                                    }
+                                  },
+                                  "right" : {
+                                    "type" : "hexstr",
+                                    "value" : "0xffff"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "right" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : "==",
+                          "left" : {
+                            "type" : "field",
+                            "value" : ["_ipv41", "dstAddr"]
+                          },
+                          "right" : {
+                            "type" : "expression",
+                            "value" : {
+                              "op" : "&",
+                              "left" : {
+                                "type" : "expression",
+                                "value" : {
+                                  "op" : "&",
+                                  "left" : {
+                                    "type" : "expression",
+                                    "value" : {
+                                      "op" : ">>",
+                                      "left" : {
+                                        "type" : "field",
+                                        "value" : ["scalars", "current_flow_0"]
+                                      },
+                                      "right" : {
+                                        "type" : "hexstr",
+                                        "value" : "0x74"
+                                      }
+                                    }
+                                  },
+                                  "right" : {
+                                    "type" : "hexstr",
+                                    "value" : "0x0fffffffffffffffffffffffffffffffffffff"
+                                  }
+                                }
+                              },
+                              "right" : {
+                                "type" : "hexstr",
+                                "value" : "0xffffffff"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "==",
+                      "left" : {
+                        "type" : "field",
+                        "value" : ["_homa_common2", "dport"]
+                      },
+                      "right" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : "&",
+                          "left" : {
+                            "type" : "expression",
+                            "value" : {
+                              "op" : "&",
+                              "left" : {
+                                "type" : "expression",
+                                "value" : {
+                                  "op" : ">>",
+                                  "left" : {
+                                    "type" : "field",
+                                    "value" : ["scalars", "current_flow_0"]
+                                  },
+                                  "right" : {
+                                    "type" : "hexstr",
+                                    "value" : "0x64"
+                                  }
+                                }
+                              },
+                              "right" : {
+                                "type" : "hexstr",
+                                "value" : "0x0fffffffffffffffffffffffffffffffffffff"
+                              }
+                            }
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0xffff"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "right" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "==",
+                  "left" : {
+                    "type" : "hexstr",
+                    "value" : "0x0a"
+                  },
+                  "right" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "&",
+                      "left" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : "&",
+                          "left" : {
+                            "type" : "expression",
+                            "value" : {
+                              "op" : ">>",
+                              "left" : {
+                                "type" : "field",
+                                "value" : ["scalars", "current_flow_0"]
+                              },
+                              "right" : {
+                                "type" : "hexstr",
+                                "value" : "0x30"
+                              }
+                            }
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0x0fffffffffffffffffffffffffffffffffffff"
+                          }
+                        }
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0x0f"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "true_next" : "tbl_main325",
+          "false_next" : "tbl_main332"
         }
       ]
     },
@@ -541,7 +2347,7 @@
       "id" : 1,
       "source_info" : {
         "filename" : "main.p4",
-        "line" : 205,
+        "line" : 372,
         "column" : 8,
         "source_fragment" : "MyEgress"
       },

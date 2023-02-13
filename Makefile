@@ -48,8 +48,11 @@ tinet-down: ## Set up Virtual Env.
 .PHONY: tinet-reset
 tinet-reset: tinet-down tinet-up ## Reset Virtual Env.
 
-.PHONY: update-image
-update-image: build tinet-reset ## Update image and reset virtual Env.
+.PHONY: p4-update
+p4-update: p4-build tinet-down tinet-up ## Build P4 Src and Reset Virtual Env.
+
+.PHONY: image-update
+image-update: build tinet-reset ## Update image and reset virtual Env.
 
 ##@ Run
 
@@ -91,8 +94,18 @@ p4-ct: ## attach p4's docker container
 
 .PHONY: server-ct
 server-ct: ## attach server's docker container
-	docker exec -it Server bash
+	docker exec -w /homa/util -it Server bash
 
 .PHONY: client-ct
 client-ct: ## attach client's docker container
-	docker exec -it Client bash
+	docker exec -w /homa/util -it Client bash
+
+##@ Measurement
+
+.PHONY: client-ms
+client-ms: ## run measurement in client
+	docker exec -w /homa/util -it Client ./homa_test 192.168.0.10:4000 rtt
+
+.PHONY: server-ms
+server-ms: ## run measurement in server
+	docker exec -w /homa/util -it Client ./server --verbose
