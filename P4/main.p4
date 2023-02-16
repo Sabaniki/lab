@@ -291,7 +291,11 @@ control MyIngress(inout headers hdr,
 
     table dbg_rtt {
         key = {
-            tmp_rtt: exact;
+            tmp_rtt    : exact;
+            dbg_srcAddr: exact;
+            dbg_sport  : exact;
+            dbg_dstAddr: exact;
+            dbg_dport  : exact;
         }
         actions = {
             NoAction;

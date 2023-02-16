@@ -183,6 +183,30 @@ tables {
     bitwidth: 48
     match_type: EXACT
   }
+  match_fields {
+    id: 2
+    name: "dbg_srcAddr"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  match_fields {
+    id: 3
+    name: "dbg_sport"
+    bitwidth: 16
+    match_type: EXACT
+  }
+  match_fields {
+    id: 4
+    name: "dbg_dstAddr"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  match_fields {
+    id: 5
+    name: "dbg_dport"
+    bitwidth: 16
+    match_type: EXACT
+  }
   action_refs {
     id: 21257015
   }
