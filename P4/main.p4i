@@ -885,34 +885,36 @@ const FlowStatus DONE_MES = 0xf;
 //     bit<48>     timestamp;
 // }
 
-//                     1        1
-//       3  4     8  9 0        4
-// 0     2  8     0  6 0        8
-// +--+--+--+--+--+--+-+--+--+--+
-// |  A  |B |  C  |D |E|   F    |
-// +--+--+--+--+--+--+-+--+--+--+
-typedef bit<148> Flow;
+//                     1        1           2
+//       3  4     8  9 0        4           1
+// 0     2  8     0  6 0        8           2
+// +--+--+--+--+--+--+-+--+--+--+--+--+--+--+
+// |  A  |B |  C  |D |E|   F    |     G     |
+// +--+--+--+--+--+--+-+--+--+--+--+--+--+--+
+typedef bit<212> Flow;
 
-const int END_srcAddr = 147; // A
-const int START_srcAddr = 116;
+const int END_srcAddr = 211; // A
+const int START_srcAddr = 180;
 
-const int END_sport = 115; // B
-const int START_sport = 100;
+const int END_sport = 179; // B
+const int START_sport = 164;
 
-const int END_dstAddr = 99; // C
-const int START_dstAddr = 68;
+const int END_dstAddr = 163; // C
+const int START_dstAddr = 132;
 
-const int END_dport = 67; // D
-const int START_dport = 52;
+const int END_dport = 131; // D
+const int START_dport = 116;
 
-const int END_status = 51; // E
-const int START_status = 48;
+const int END_status = 115; // E
+const int START_status = 112;
 
-const int END_timestamp = 47; // F
-const int START_timestamp = 0;
+const int END_timestamp = 111; // F
+const int START_timestamp = 64;
 
+const int END_sender_id = 63; // G
+const int START_sender_id = 0;
 
-register<bit<148>>(0x10000) flow_reg; // <格納するサイズ>(レジスタのサイズ) flow の状態を管理するためのレジスタ
+register<bit<212>>(0x100000) flow_reg; // <格納するサイズ>(レジスタのサイズ) flow の状態を管理するためのレジスタ
 
 header ethernet_t {
     macAddr_t dstAddr;
@@ -1060,6 +1062,7 @@ control MyIngress(inout headers hdr,
     bit<16> dbg_dport;
     FlowStatus dbg_status;
     bit<48> dbg_timestamp;
+    bit<64> dbg_sender_id;
 
     action drop() {
         mark_to_drop(standard_metadata);
@@ -1076,9 +1079,10 @@ control MyIngress(inout headers hdr,
         ip4Addr_t dstAddr,
         bit<16> dport,
         FlowStatus status,
-        bit<48> timestamp
+        bit<48> timestamp,
+        bit<64> sender_id
     ) {
-        Flow ret_val = srcAddr ++ sport ++ dstAddr ++ dport ++ status ++ timestamp;
+        Flow ret_val = srcAddr ++ sport ++ dstAddr ++ dport ++ status ++ timestamp ++ sender_id;
         flow = ret_val;
     }
 
@@ -1117,6 +1121,23 @@ control MyIngress(inout headers hdr,
             dbg_dport : exact;
             dbg_status : exact;
             dbg_timestamp: exact;
+            dbg_sender_id: exact;
+        }
+        actions = {
+            NoAction;
+        }
+        default_action = NoAction();
+    }
+
+    table dbg_current_flow2 {
+        key = {
+            dbg_srcAddr : exact;
+            dbg_sport : exact;
+            dbg_dstAddr : exact;
+            dbg_dport : exact;
+            dbg_status : exact;
+            dbg_timestamp: exact;
+            dbg_sender_id: exact;
         }
         actions = {
             NoAction;
@@ -1135,7 +1156,7 @@ control MyIngress(inout headers hdr,
     }
 
     apply {
-        if (hdr.ipv4.isValid()) {
+        // if (hdr.ipv4.isValid()) {
             l2_table.apply();
             if (hdr.ipv4.protocol == TYPE_HOMA) {
                 dbg_homa.apply();
@@ -1151,38 +1172,32 @@ control MyIngress(inout headers hdr,
                     );
                     flow_reg.read(current_flow, hash_num);
                     ///
-                    // dbg_srcAddr   = current_flow[END_srcAddr:START_srcAddr];
-                    // dbg_sport     = current_flow[END_sport:START_sport];
-                    // dbg_dstAddr   = current_flow[END_dstAddr:START_dstAddr];
-                    // dbg_dport     = current_flow[END_dport:START_dport];
-                    // dbg_status    = current_flow[END_status:START_status];
-                    // dbg_timestamp = current_flow[END_timestamp:START_timestamp];
-                    // dbg_current_flow.apply();
+                    dbg_srcAddr = current_flow[END_srcAddr:START_srcAddr];
+                    dbg_sport = current_flow[END_sport:START_sport];
+                    dbg_dstAddr = current_flow[END_dstAddr:START_dstAddr];
+                    dbg_dport = current_flow[END_dport:START_dport];
+                    dbg_status = current_flow[END_status:START_status];
+                    dbg_timestamp = current_flow[END_timestamp:START_timestamp];
+                    dbg_sender_id = current_flow[END_sender_id:START_sender_id];
+                    dbg_current_flow.apply();
                     if (
                         hdr.ipv4.srcAddr == current_flow[END_dstAddr:START_dstAddr] &&
                         hdr.homa.common.sport == current_flow[END_dport:START_dport] &&
                         hdr.ipv4.dstAddr == current_flow[END_srcAddr:START_srcAddr] &&
                         hdr.homa.common.dport == current_flow[END_sport:START_sport] &&
-                        WAIT_REP == current_flow[END_status:START_status]
+                        WAIT_REP == current_flow[END_status:START_status] &&
+                        hdr.homa.common.sender_id - 1 == current_flow[END_sender_id:START_sender_id]
                         // 対応するリクエストがすでに来ているかを確認する．あれば計算
                     ) {
                         bit<48> req_time;
                         bit<48> rtt;
-                        // hash(
-                        //     hash_num,
-                        //     HashAlgorithm.crc16,
-                        //     (bit<16>)0,
-                        //     {hdr.ipv4.srcAddr, hdr.homa.common.sport, hdr.ipv4.dstAddr, hdr.homa.common.dport},
-                        //     (bit<32>)65536
-                        // );
                         Flow before = current_flow;
-                        // flow_reg.read(before, hash_num);
-                        req_time = before[47:0];
+                        req_time = before[111:64];
                         rtt = standard_metadata.ingress_global_timestamp - req_time;
-                        current_flow[47:0] = rtt;
+                        current_flow[111:64] = rtt;
                         tmp_rtt = rtt;
                         dbg_rtt.apply();
-                        current_flow[51:48] = DONE_MES;
+                        current_flow[115:112] = DONE_MES;
                         flow_reg.write(hash_num, current_flow);
                     } else { // なければ作成
                         hash(
@@ -1192,7 +1207,7 @@ control MyIngress(inout headers hdr,
                             {hdr.ipv4.srcAddr, hdr.homa.common.sport, hdr.ipv4.dstAddr, hdr.homa.common.dport},
                             (bit<32>)65536
                         );
-                        flow_reg.read(current_flow, hash_num);
+                        // flow_reg.read(current_flow, hash_num);
                         Flow f;
                         create_flow_obj(
                             f,
@@ -1201,7 +1216,8 @@ control MyIngress(inout headers hdr,
                             hdr.ipv4.dstAddr,
                             hdr.homa.common.dport,
                             WAIT_REP,
-                            standard_metadata.ingress_global_timestamp
+                            standard_metadata.ingress_global_timestamp,
+                            hdr.homa.common.sender_id
                         );
                         flow_reg.write(hash_num, f);
                     }
@@ -1213,11 +1229,12 @@ control MyIngress(inout headers hdr,
                     dbg_dport = current_flow[END_dport:START_dport];
                     dbg_status = current_flow[END_status:START_status];
                     dbg_timestamp = current_flow[END_timestamp:START_timestamp];
-                    dbg_current_flow.apply();
+                    dbg_sender_id = current_flow[END_sender_id:START_sender_id];
+                    dbg_current_flow2.apply();
                     ///
                 }
             }
-        }
+        // }
     }
 }
 

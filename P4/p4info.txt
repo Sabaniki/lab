@@ -107,6 +107,65 @@ tables {
     bitwidth: 48
     match_type: EXACT
   }
+  match_fields {
+    id: 7
+    name: "dbg_sender_id"
+    bitwidth: 64
+    match_type: EXACT
+  }
+  action_refs {
+    id: 21257015
+  }
+  size: 1024
+}
+tables {
+  preamble {
+    id: 35005167
+    name: "MyIngress.dbg_current_flow2"
+    alias: "dbg_current_flow2"
+  }
+  match_fields {
+    id: 1
+    name: "dbg_srcAddr"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  match_fields {
+    id: 2
+    name: "dbg_sport"
+    bitwidth: 16
+    match_type: EXACT
+  }
+  match_fields {
+    id: 3
+    name: "dbg_dstAddr"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  match_fields {
+    id: 4
+    name: "dbg_dport"
+    bitwidth: 16
+    match_type: EXACT
+  }
+  match_fields {
+    id: 5
+    name: "dbg_status"
+    bitwidth: 4
+    match_type: EXACT
+  }
+  match_fields {
+    id: 6
+    name: "dbg_timestamp"
+    bitwidth: 48
+    match_type: EXACT
+  }
+  match_fields {
+    id: 7
+    name: "dbg_sender_id"
+    bitwidth: 64
+    match_type: EXACT
+  }
   action_refs {
     id: 21257015
   }
@@ -172,11 +231,11 @@ registers {
   type_spec {
     bitstring {
       bit {
-        bitwidth: 148
+        bitwidth: 212
       }
     }
   }
-  size: 65536
+  size: 1048576
 }
 type_info {
 }

@@ -49,7 +49,8 @@ tinet-down: ## Set up Virtual Env.
 tinet-reset: tinet-down tinet-up ## Reset Virtual Env.
 
 .PHONY: p4-update
-p4-update: p4-build tinet-down tinet-up ## Build P4 Src and Reset Virtual Env.
+# p4-update: p4-build tinet-down tinet-up ## Build P4 Src and Reset Virtual Env.
+p4-update: rm-homa p4-build tinet-down tinet-up ins-homa ## Build P4 Src and Reset Virtual Env.
 
 .PHONY: image-update
 image-update: build tinet-reset ## Update image and reset virtual Env.
