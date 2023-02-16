@@ -7,7 +7,7 @@
 ## topology
 ![topo](topo/topo.svg)
 
-## 使い方
+## How to use
 1. Create virtual env
     - `make env`
         - Build required docker images
